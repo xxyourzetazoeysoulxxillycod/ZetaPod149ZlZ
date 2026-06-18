@@ -6,7 +6,7 @@ local TweenService = game:GetService("TweenService")
 -- Configuration
 local PLAYER_BLOCKER_CONFIG = {
     BLOCK_KEYWORDS = {
-        "free", "hack", "cheat", "exploit", "SCAMMER", "scammed", "toook"
+        "free", "hack", "cheat", "exploit", "SCAMMER", "scammed", "toook","SCAM","scammer","scam"
     },
     GUI_POSITION = UDim2.new(0, 10, 0, 50),
     AUTO_BLOCK_ENABLED = true
@@ -74,7 +74,7 @@ Title.Size = UDim2.new(1, 0, 0, 40)
 Title.Position = UDim2.new(0, 0, 0, 0)
 Title.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
 Title.BackgroundTransparency = 0
-Title.Text = "⚡ Instant Blocker"
+Title.Text = "⚡ Instant Blocker by ZetaScripts(last4zeta on tt)"
 Title.Font = Enum.Font.FredokaOne
 Title.TextSize = 18
 Title.TextColor3 = Color3.fromRGB(255, 255, 255)
