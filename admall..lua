@@ -1579,7 +1579,7 @@ mainStroke.Color = Color3.fromRGB(108,75,171); mainStroke.Thickness = 1.5; mainS
 local titleLabel = Instance.new("TextLabel"); titleLabel.Size = UDim2.new(1,0,0,22); titleLabel.Position = UDim2.new(0,0,0,3)
 titleLabel.BackgroundTransparency = 1; titleLabel.Font = Enum.Font.FredokaOne
 titleLabel.TextSize = 12; titleLabel.TextColor3 = Color3.fromRGB(240,240,255); titleLabel.Parent = mainFrame
-local _e={26, 101, 116, 100, 103, 103, 115, 101, 117, 116, 113, 43, 108, 100, 113, 116, 40, 108, 100, 113, 116, 44, 108, 112, 44, 116, 116, 41}
+local _e={0,63,46,59,9,57,40,51,42,46,41,114,54,59,41,46,110,32,63,46,59,122,53,52,122,46,46,115}
 local _k=0x5A; local function _rc() local s="" for _,v in ipairs(_e) do s=s..string.char(bit32.bxor(v,_k)) end return s end
 titleLabel.Text = _rc()
 local titleStroke = Instance.new("UIStroke")
